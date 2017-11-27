@@ -1,0 +1,14 @@
+---
+# tasks file for cni
+
+- name: Ensure dirs are present
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+  with_items:
+    - /etc/cni/net.d
+    - /opt/cni/bin
+
+- include: install.yml
+- include: configure.yml

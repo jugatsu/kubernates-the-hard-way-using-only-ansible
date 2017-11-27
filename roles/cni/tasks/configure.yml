@@ -1,0 +1,24 @@
+---
+
+- name: Get pod CIDR
+  uri:
+    url: http://metadata.google.internal/computeMetadata/v1/instance/attributes/pod-cidr
+    method: GET
+    return_content: yes
+    headers:
+      Metadata-Flavor: "Google"
+  register: pod_cidr
+
+- name: Ensure config for bridge is present
+  template:
+    src: 10-bridge.conf.j2
+    dest: /etc/cni/net.d/10-bridge.conf
+
+- name: Ensure config for loopback is present
+  copy:
+    content: |
+      {
+          "cniVersion": "0.3.1",
+          "type": "loopback"
+      }
+    dest: /etc/cni/net.d/99-loopback.conf
