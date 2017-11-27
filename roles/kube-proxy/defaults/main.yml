@@ -1,0 +1,6 @@
+---
+# defaults file for kube-proxy
+
+kubeproxy_certs:
+  - kube-proxy.pem
+  - kube-proxy-key.pem

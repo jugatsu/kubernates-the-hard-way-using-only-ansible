@@ -1,0 +1,12 @@
+---
+
+- name: Ensure kube-proxy systemd service is present
+  copy:
+    src: kube-proxy.service
+    dest: /etc/systemd/system/kube-proxy.service
+
+- name: Ensure kube-proxy services is running
+  service:
+    name: kube-proxy
+    enabled: yes
+    state: started

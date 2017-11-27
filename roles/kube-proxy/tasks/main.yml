@@ -1,0 +1,18 @@
+---
+# tasks file for kube-proxy
+
+- include: install.yml
+
+- name: Check if certificates exist
+  stat:
+    path: /var/lib/kube-proxy/{{ item }}
+  with_items: "{{ kubeproxy_certs }}"
+  register: certs
+
+- name: Configure Kube-proxy
+  block:
+  - include: configure.yml
+  - include: service.yml
+  when:
+    - certs.results.0.stat.exists
+    - certs.results.1.stat.exists

@@ -1,0 +1,31 @@
+---
+
+- name: Ensure directory for kube-proxy is present
+  file:
+    path: /var/lib/kube-proxy
+    state: directory
+    mode: 0750
+
+- name: Configure kube-proxy
+  shell: |
+    kubectl config set-cluster kubernetes-the-hard-way \
+      --certificate-authority=ca.pem \
+      --embed-certs=true \
+      --server=https://{{ gce_lb_public_ip }}:6443 \
+      --kubeconfig=kubeconfig
+
+    kubectl config set-credentials kube-proxy \
+      --client-certificate=kube-proxy.pem \
+      --client-key=kube-proxy-key.pem \
+      --embed-certs=true \
+      --kubeconfig=kubeconfig
+
+    kubectl config set-context default \
+      --cluster=kubernetes-the-hard-way \
+      --user=kube-proxy \
+      --kubeconfig=kubeconfig
+
+    kubectl config use-context default --kubeconfig=kubeconfig
+  args:
+    chdir: /var/lib/kube-proxy
+    creates: /var/lib/kube-proxy/kubeconfig
