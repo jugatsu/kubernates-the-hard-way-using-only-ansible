@@ -1,0 +1,6 @@
+---
+# defaults file for kubelet
+
+kubelet_certs:
+  - "{{ ansible_hostname }}.pem"
+  - "{{ ansible_hostname }}-key.pem"

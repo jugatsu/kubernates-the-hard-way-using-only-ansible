@@ -1,0 +1,37 @@
+---
+
+- name: Ensure dirs for kubelet are present
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+  with_items:
+    - /var/lib/kubelet
+    - /var/lib/kubernetes
+    - /var/run/kubernetes
+
+- name: Ensure kubelet is configured
+  shell: |
+    kubectl config set-cluster kubernetes-the-hard-way \
+      --certificate-authority=/var/lib/kubernetes/ca.pem \
+      --embed-certs=true \
+      --server=https://{{ gce_lb_public_ip }}:6443 \
+      --kubeconfig=kubeconfig
+
+    kubectl config set-credentials system:node:{{ ansible_hostname }} \
+      --client-certificate={{ ansible_hostname }}.pem \
+      --client-key={{ ansible_hostname }}-key.pem \
+      --embed-certs=true \
+      --kubeconfig=kubeconfig
+
+    kubectl config set-context default \
+      --cluster=kubernetes-the-hard-way \
+      --user=system:node:{{ ansible_hostname }} \
+      --kubeconfig=kubeconfig
+
+    kubectl config use-context default --kubeconfig=kubeconfig
+  args:
+    chdir: /var/lib/kubelet
+    creates: /var/lib/kubelet/kubeconfig
+  register: config
+  tags: kubelet

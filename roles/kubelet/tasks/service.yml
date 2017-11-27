@@ -1,0 +1,21 @@
+---
+
+- name: Get pod CIDR
+  uri:
+    url: http://metadata.google.internal/computeMetadata/v1/instance/attributes/pod-cidr
+    method: GET
+    return_content: yes
+    headers:
+      Metadata-Flavor: "Google"
+  register: pod_cidr
+
+- name: Ensure kubelet systemd service is present
+  template:
+    src: kubelet.service.j2
+    dest: /etc/systemd/system/kubelet.service
+
+- name: Ensure kubelet services is running
+  service:
+    name: kubelet
+    enabled: yes
+    state: started

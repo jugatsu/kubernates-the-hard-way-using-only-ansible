@@ -1,0 +1,7 @@
+---
+
+- name: Ensure kubelet binary is present
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubelet
+    dest: /usr/local/bin
+    mode: 0755
