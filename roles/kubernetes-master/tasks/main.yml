@@ -1,0 +1,30 @@
+---
+# tasks file for kubernetes-master
+
+- name: Ensure dirs for Kubernetes are present
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+  with_items:
+    - /var/lib/kubernetes
+    - /var/run/kubernetes
+
+- include: install.yml
+
+- name: Check if certificates exist
+  stat:
+    path: /var/lib/kubernetes/{{ item }}
+  with_items: "{{ kubernetes_certs }}"
+  register: certs
+
+- include: configure.yml
+  when:
+    - certs.results.0.stat.exists
+    - certs.results.1.stat.exists
+    - certs.results.2.stat.exists
+    - certs.results.3.stat.exists
+    - certs.results.4.stat.exists
+
+- include: rbac.yml
+  tags: rbac

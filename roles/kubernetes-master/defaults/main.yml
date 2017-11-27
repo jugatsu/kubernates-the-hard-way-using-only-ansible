@@ -1,0 +1,10 @@
+---
+# defaults file for kubernetes-master
+
+kubernetes_internal_ip: "{{ ansible_default_ipv4.address }}"
+kubernetes_certs:
+  - ca.pem
+  - ca-key.pem
+  - kubernetes.pem
+  - kubernetes-key.pem
+  - encryption-config.yaml
