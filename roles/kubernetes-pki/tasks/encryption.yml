@@ -1,0 +1,25 @@
+---
+
+- name: Generate an encryption key
+  shell: head -c 32 /dev/urandom | base64
+  args:
+    chdir: /opt/kubernetes-pki
+    creates: encryption-config.yaml
+  register: encryption_key
+
+- name: Ensure the encryption config file is present
+  copy:
+    content: |
+      kind: EncryptionConfig
+      apiVersion: v1
+      resources:
+        - resources:
+            - secrets
+          providers:
+            - aescbc:
+                keys:
+                  - name: key1
+                    secret: {{ encryption_key.stdout }}
+            - identity: {}
+    dest: /opt/kubernetes-pki/encryption-config.yaml
+  when: encryption_key.changed

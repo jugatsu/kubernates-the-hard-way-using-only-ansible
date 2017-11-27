@@ -1,0 +1,13 @@
+---
+
+- name: Enumerate all PKI files
+  shell: ls /opt/kubernetes-pki/*
+  changed_when: false
+  register: path_files
+
+- name: Copy all files to control machine
+  fetch:
+    src: "{{ item }}"
+    dest: "{{ kubernetes_pki_fetch_dest }}"
+    flat: yes
+  with_items: "{{ path_files.stdout_lines }}"

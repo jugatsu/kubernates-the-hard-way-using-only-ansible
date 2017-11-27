@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: cfssl
+    - role: cfssljson
+    - role: kubernetes-pki

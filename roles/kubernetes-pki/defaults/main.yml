@@ -1,0 +1,4 @@
+---
+# defaults file for kubernetes-pki
+
+kubernetes_pki_fetch_dest: "files/pki/"
