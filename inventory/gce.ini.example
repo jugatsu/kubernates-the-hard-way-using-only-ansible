@@ -1,0 +1,8 @@
+[gce]
+gce_service_account_email_address = SERVICE_ACCOUNT_EMAIL
+gce_service_account_pem_file_path = PATH_TO_CREDENTIALS_JSON
+gce_project_id = YOUR_PROJECT_NAME
+
+[cache]
+cache_path = ~/.ansible/tmp
+cache_max_age = 0
