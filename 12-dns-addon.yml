@@ -1,0 +1,20 @@
+---
+
+- name: Add DNS Cluster Add-on
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+
+    - name: Check if DNS Cluster Add-on is deployed
+      command: kubectl get svc -n kube-system -o name kube-dns
+      changed_when: false
+      ignore_errors: true
+      register: k8s_dns_addon
+
+    - name: Ensure DNS-addon is deployed
+      command: |
+        kubectl create \
+          -f https://storage.googleapis.com/kubernetes-the-hard-way/kube-dns.yaml
+      when: k8s_dns_addon.rc != 0

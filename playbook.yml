@@ -1,0 +1,48 @@
+---
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/01-prerequisites.md
+- include: 01-prerequisites.yml
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/02-client-tools.md
+- include: 02-client-tools.yml
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/03-compute-resources.md
+- include: 03-compute-resources.yml
+  tags: infra
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/04-certificate-authority.md
+- include: 04-certificate-authority.yml
+  tags: pki
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/05-kubernetes-configuration-files.md
+- include: 05-kubernetes-configuration-files.yml
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/06-data-encryption-keys.md
+- include: 06-data-encryption-keys.yml
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/07-bootstrapping-etcd.md
+- include: 07-bootstrapping-etcd.yml
+  tags: etcd
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/08-bootstrapping-kubernetes-controllers.md
+- include: 08-bootstrapping-kubernetes-controllers.yml
+  tags: master
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/09-bootstrapping-kubernetes-workers.md
+- include: 09-bootstrapping-kubernetes-workers.yml
+  tags: worker
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/10-configuring-kubectl.md
+- include: 10-configuring-kubectl.yml
+  tags: cli
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/11-pod-network-routes.md
+- include: 11-pod-network-routes.yml
+  tags: pod-network
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/12-dns-addon.md
+- include: 12-dns-addon.yml
+  tags: dns
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/13-smoke-test.md
+- include: 13-smoke-test.yml

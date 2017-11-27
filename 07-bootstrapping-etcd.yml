@@ -1,0 +1,29 @@
+---
+
+- name: Bootstrapping etcd
+  hosts: controllers
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+
+    - name: Ensure dirs are present
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0750
+      with_items:
+        - /etc/etcd
+        - /var/lib/etcd
+
+    - name: Copy certs
+      copy:
+        src: files/pki/{{ item.src }}
+        dest: "{{ item.dest }}"
+      with_items:
+        - {src: ca.pem, dest: "/etc/etcd/ca.pem"}
+        - {src: kubernetes.pem, dest: "/etc/etcd/kubernetes.pem"}
+        - {src: kubernetes-key.pem, dest: "/etc/etcd/kubernetes-key.pem"}
+
+  roles:
+    - etcd

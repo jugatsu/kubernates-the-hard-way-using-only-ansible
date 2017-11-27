@@ -1,0 +1,12 @@
+---
+# Skipping this step as we will configure all Kubernates components in the next steps
+
+- hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks:
+
+  - debug:
+      msg: "Skipping..."

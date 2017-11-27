@@ -1,0 +1,13 @@
+---
+# Skipping this step
+# TODO: install Google Cloud SDK
+
+- hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  tasks:
+
+  - debug:
+      msg: "Skipping..."

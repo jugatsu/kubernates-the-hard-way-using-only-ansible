@@ -1,0 +1,26 @@
+---
+
+- name: Ensure python 2.7 is present on all hosts
+  hosts: all
+  become: true
+  gather_facts: false
+
+  pre_tasks:
+    - name: Ensure python 2.7 is present
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      register: output
+      changed_when:
+        - output.stdout != ""
+        - output.stdout != "\r\n"
+    - name: Gather facts
+      setup:
+
+- name: Create PKI infastructure
+  hosts: pki
+  become: true
+
+  roles:
+    - cfssl
+    - cfssljson
+    - kubectl
+    - kubernetes-pki

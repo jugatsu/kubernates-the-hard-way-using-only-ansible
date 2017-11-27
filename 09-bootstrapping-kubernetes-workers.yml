@@ -1,0 +1,44 @@
+---
+
+- name: Bootstrapping Kubernates workers
+  hosts: workers
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+
+    - name: Ensure socat is present
+      apt:
+        name: socat
+        state: present
+        cache_valid_time: 3600
+        update_cache: yes
+
+    - name: Ensure directories for Kubelet are present
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0750
+      with_items:
+        - /var/lib/kubelet
+        - /var/lib/kubernetes
+        - /var/lib/kube-proxy
+
+    - name: Ensure certificates for Kubelet are copied
+      copy:
+        src: files/pki/{{ item.src }}
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: 'ca.pem', dest: '/var/lib/kubernetes/ca.pem' }
+        - { src: 'ca.pem', dest: '/var/lib/kube-proxy/ca.pem' }
+        - { src: 'kube-proxy.pem', dest: '/var/lib/kube-proxy/kube-proxy.pem' }
+        - { src: 'kube-proxy-key.pem', dest: '/var/lib/kube-proxy/kube-proxy-key.pem' }
+        - { src: '{{ inventory_hostname }}.pem', dest: '/var/lib/kubelet/{{ inventory_hostname }}.pem' }
+        - { src: '{{ inventory_hostname }}-key.pem', dest: '/var/lib/kubelet/{{ inventory_hostname }}-key.pem' }
+
+  roles:
+    - kubectl
+    - cni
+    - cri
+    - kubelet
+    - kube-proxy

@@ -1,0 +1,30 @@
+---
+
+- name: Add pod network routes
+  hosts: workers
+  become: true
+  gather_facts: true
+
+  tasks:
+
+    - name: Get pod CIDR
+      uri:
+        url: http://metadata.google.internal/computeMetadata/v1/instance/attributes/pod-cidr
+        method: GET
+        return_content: yes
+        headers:
+          Metadata-Flavor: "Google"
+      register: workers_cidr
+
+    - name: Get routes
+      command: 'gcloud compute routes list --filter "name: kubernetes-route-{{ ansible_hostname }}"'
+      register: gce_list_routes
+      changed_when: false
+
+    - name: Add routes for POD CIDR
+      command: |
+        gcloud compute routes create kubernetes-route-{{ ansible_hostname }} \
+          --network kubernetes-the-hard-way \
+          --next-hop-address {{ ansible_default_ipv4.address }} \
+          --destination-range {{ workers_cidr.content }}
+      when: ansible_hostname not in gce_list_routes.stdout

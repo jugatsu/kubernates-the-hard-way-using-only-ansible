@@ -1,0 +1,28 @@
+---
+
+- name: Bootstrapping Kubernates controllers
+  hosts: controllers
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+
+    - name: Ensure directory for Kubernates certificates is present
+      file:
+        path: /var/lib/kubernetes
+        state: directory
+        mode: 0750
+
+    - name: Ensure certificates for Kubernates Master are copied
+      copy:
+        src: files/pki/{{ item.src }}
+        dest: "{{ item.dest }}"
+      with_items:
+        - {src: ca.pem, dest: "/var/lib/kubernetes/ca.pem"}
+        - {src: ca-key.pem, dest: "/var/lib/kubernetes/ca-key.pem"}
+        - {src: kubernetes.pem, dest: "/var/lib/kubernetes/kubernetes.pem"}
+        - {src: kubernetes-key.pem, dest: "/var/lib/kubernetes/kubernetes-key.pem"}
+        - {src: encryption-config.yaml, dest: "/var/lib/kubernetes/encryption-config.yaml"}
+
+  roles:
+    - kubernetes-master

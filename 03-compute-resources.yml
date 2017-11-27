@@ -1,0 +1,112 @@
+---
+
+- name: Ensure all GCE resources are present
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+    - name: Ensure kubernetes-the-hard-way network is present
+      gce_net:
+        name: kubernetes-the-hard-way
+        mode: custom
+        subnet_region: us-west1
+        subnet_name: "kubernetes"
+        ipv4_range: '10.240.0.0/24'
+        state: "present"
+
+    - name: Ensure firewall rule for kubernetes-the-hard-way internal is present
+      gce_net:
+        name: kubernetes-the-hard-way
+        fwname: kubernetes-the-hard-way-allow-internal
+        allowed: 'tcp;udp;icmp'
+        src_range: ['10.240.0.0/24', '10.200.0.0/16']
+        state: present
+
+    - name: Ensure firewall rule for kubernetes-the-hard-way external is present
+      gce_net:
+        name: kubernetes-the-hard-way
+        fwname: "kubernetes-the-hard-way-allow-external"
+        allowed: 'tcp:22,6443;icmp'
+        src_range: ['0.0.0.0/0']
+        state: present
+
+    - name: Ensure static IP address is present
+      gce_eip:
+        name: kubernetes-the-hard-way
+        region: us-west1
+        state: present
+      register: gce_eip
+      tags: always
+
+    - name: Ensure controllers are present
+      gce:
+        instance_names: controller-0,controller-1,controller-2
+        machine_type: "{{ machine_type }}"
+        metadata: "{{ metadata}}"
+        image: "{{ image }}"
+        disk_size: 200
+        ip_forward: true
+        service_account_permissions:
+          - compute-rw
+          - storage-ro
+          - service-management
+          - service-control
+          - logging-write
+          - monitoring
+        network: kubernetes-the-hard-way
+        subnetwork: kubernetes
+        zone: us-west1-a
+        tags:
+          - kubernetes-the-hard-way
+          - controller
+          - group-controllers
+        state: present
+
+    - name: Ensure workers are present
+      gce:
+        instance_names: worker-{{ item }}
+        machine_type: "{{ machine_type }}"
+        image: "{{ image }}"
+        disk_size: 200
+        ip_forward: true
+        metadata: '{"sshKeys":"k8s:{{ lookup("file", "files/ssh/k8s_the_hard_way.pub") }}","pod-cidr":"10.200.{{ item }}.0/24"}'
+        service_account_permissions:
+          - compute-rw
+          - storage-ro
+          - service-management
+          - service-control
+          - logging-write
+          - monitoring
+        network: kubernetes-the-hard-way
+        subnetwork: kubernetes
+        zone: us-west1-a
+        tags:
+          - kubernetes-the-hard-way
+          - worker
+          - group-workers
+        state: present
+      with_items:
+        - 0
+        - 1
+        - 2
+
+    - name: Ensure host for creating PKI infrastructure is present
+      gce:
+        instance_names: pki
+        machine_type: "{{ machine_type }}"
+        metadata: "{{ metadata}}"
+        image: "{{ image }}"
+        zone: us-west1-a
+        state: present
+
+    - name: Ensure Load Balancer is present
+      gce_lb:
+        name: kubernetes-the-hard-way
+        external_ip: kubernetes-the-hard-way
+        protocol: tcp
+        port_range: 6443
+        region: us-west1
+        members: ['us-west1-a/controller-0', 'us-west1-a/controller-1', 'us-west1-a/controller-2']
+        state: present

@@ -1,0 +1,74 @@
+---
+
+- name: Ensure all GCE resources are deleted
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+    - name: Ensure all controllers are deleted
+      gce:
+        instance_names: controller-0,controller-1,controller-2
+        zone: us-west1-a
+        state: absent
+
+    - name: Ensure all workers are deleted
+      gce:
+        instance_names: worker-0,worker-1,worker-2
+        zone: us-west1-a
+        state: absent
+
+    - name: Ensure pki instance is deleted
+      gce:
+        instance_names: pki
+        zone: us-west1-a
+        state: absent
+
+    - name: Ensure LB is deleted
+      gce_lb:
+        name: kubernetes-the-hard-way
+        external_ip: kubernetes-the-hard-way
+        protocol: tcp
+        port_range: 6443
+        region: us-west1
+        members: ['us-west1-a/controller-0', 'us-west1-a/controller-1', 'us-west1-a/controller-2']
+        state: deleted
+
+    - name: Ensure static IP address is deleted
+      gce_eip:
+        name: kubernetes-the-hard-way
+        region: us-west1
+        state: absent
+
+    - name: Ensure firewall rules are deleted
+      gce_net:
+        name: kubernetes-the-hard-way
+        fwname: "{{ item }}"
+        state: absent
+      with_items:
+        - kubernetes-the-hard-way-allow-external
+        - kubernetes-the-hard-way-allow-internal
+        - kubernetes-the-hard-way-allow-nginx-service
+
+    - name: Ensure custom routes are deleted
+      command: |
+        gcloud -q compute routes delete \
+          kubernetes-route-worker-0 \
+          kubernetes-route-worker-1 \
+          kubernetes-route-worker-2
+      ignore_errors: true
+
+    - name: Ensure kubernetes-the-hard-way network is absent
+      gce_net:
+        name: kubernetes-the-hard-way
+        mode: custom
+        subnet_region: us-west1
+        subnet_name: "kubernetes"
+        ipv4_range: '10.240.0.0/24'
+        state: absent
+
+    - name: Ensure custom network is deleted
+      command: |
+        gcloud -q compute networks delete kubernetes-the-hard-way
+      ignore_errors: true

@@ -1,0 +1,10 @@
+---
+
+- name: Ensure kubectl is present on control machine
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  roles:
+    - kubectl
