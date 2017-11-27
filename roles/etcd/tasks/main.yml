@@ -1,0 +1,25 @@
+---
+# tasks file for etcd
+
+- name: Ensure dirs are present
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+  with_items:
+    - /etc/etcd
+    - /var/lib/etcd
+
+- include: install.yml
+
+- name: Check if certificates exist
+  stat:
+    path: /etc/etcd/{{ item }}
+  with_items: "{{ etcd_certs }}"
+  register: etcd_certs
+
+- include: configure.yml
+  when:
+    - etcd_certs.results.0.stat.exists
+    - etcd_certs.results.1.stat.exists
+    - etcd_certs.results.2.stat.exists

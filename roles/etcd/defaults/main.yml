@@ -1,0 +1,8 @@
+---
+# defaults file for etcd
+
+etcd_internal_ip: "{{ ansible_default_ipv4.address }}"
+etcd_certs:
+  - ca.pem
+  - kubernetes.pem
+  - kubernetes-key.pem

@@ -1,0 +1,22 @@
+---
+
+- name: Ensure archive with etcd is downloaded
+  get_url:
+    url: https://github.com/coreos/etcd/releases/download/v3.2.8/etcd-v3.2.8-linux-amd64.tar.gz
+    dest: /opt/etcd-v3.2.8-linux-amd64.tar.gz
+    checksum: "sha1:bf56565be81d0d4dc2d9283532daf469008c802a"
+
+- name: Ensure archive with etcd is extracted
+  unarchive:
+    src: /opt/etcd-v3.2.8-linux-amd64.tar.gz
+    dest: /usr/local/
+    remote_src: yes
+
+- name: Ensure symlinks for etcd binaries are present
+  file:
+    src: /usr/local/etcd-v3.2.8-linux-amd64/{{ item }}
+    dest: /usr/local/bin/{{ item }}
+    state: link
+  with_items:
+    - etcd
+    - etcdctl
