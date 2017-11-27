@@ -1,0 +1,19 @@
+# credentials
+credentials/*
+!credentials/.gitkeep
+
+# molecule
+.molecule
+*.pyc
+
+# Ansible GCE
+.env.gce
+gce.ini
+
+# ssh
+files/ssh/*
+!files/ssh/.gitkeep
+
+# pki
+files/pki/*
+!files/pki/.gitkeep
