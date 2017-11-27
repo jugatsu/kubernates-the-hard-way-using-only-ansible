@@ -1,0 +1,5 @@
+---
+
+image: ubuntu-1604-xenial-v20171011
+machine_type: n1-standard-1
+metadata: '{"sshKeys":"k8s:{{ lookup("file", "files/ssh/k8s_the_hard_way.pub") }}"}'
