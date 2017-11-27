@@ -1,0 +1,8 @@
+---
+# tasks file for cfssljson
+
+- name: Ensure cfssljson binary is present
+  get_url:
+    url: https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+    dest: /usr/local/bin/cfssljson
+    mode: 0655
