@@ -52,4 +52,5 @@ kubectl get no
 ## Cleanup
 ```bash
 ansible-playbook 14-cleanup.yml
+kubectl config delete-context kubernetes-the-hard-way
 ```
